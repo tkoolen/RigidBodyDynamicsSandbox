@@ -8,7 +8,7 @@ using ODE
 include("simulate.jl")
 
 function main()
-    filename = "/Users/twan/code/drake-distro/drake/examples/Strandbeest/Strandbeest.urdf"
+    filename = "../urdf/Strandbeest.urdf"
     mechanism = RigidBodyDynamics.parse_urdf(Float64, filename)
     state = MechanismState(Float64, mechanism)
     rand_configuration!(state)
