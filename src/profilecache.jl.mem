@@ -1,0 +1,110 @@
+        - # # push!(LOAD_PATH, ".")
+        - # # using RigidBodyDynamics
+        - # # import RigidBodyDynamics: CacheElement
+        - # import Base: get
+        - # type CacheElement{T, F}
+        - #     data::T
+        - #     updateFunction::F
+        - #     dirty::Bool
+        - # end
+        - # # CacheElement{T}(t::T) = CacheElement{T}(t, false)
+        0 # CacheElement{T, F}(::Type{T}, updateFunction::F) = CacheElement{T, F}(updateFunction(), updateFunction, true)
+        0 #
+        0 # function get{T, F}(element::CacheElement{T, F})
+        0 #     if element.dirty
+        - #         element.data = element.updateFunction()
+        0 #         element.dirty = false
+        - #     end
+        0 #     return element.data::T
+        - # end
+        - # function setdirty!(element::CacheElement)
+        - #     element.dirty = true
+        - # end
+        - #
+        - # const blaCache = Dict{Int64, CacheElement{Vec{3, Float64}}}()
+        - # # @inline function update_fun()
+        - # #     Vec(1., 2., 3.)
+        - # # end
+        - 
+        - #
+        - # for i = 1 : N
+        - # #     blaCache[i] = CacheElement(rand(Vec{3, Float64}))
+        - #     blaCache[i] = CacheElement(Vec{3, Float64}, MyFunctor(Vec(1., 2., 3.)))
+        - # end
+        - #
+        - # const update_funs = [i::Int64 => MyFunctor(Vec(1., 2., 3.))::MyFunctor for i = 1 : N]
+        - 
+        - 
+        - using FixedSizeArrays
+        - 
+        - # immutable Identity{T}
+        - #     value::T
+        - # end
+        - # call(id::Identity) = id.value
+        - 
+        - type CacheElement{T, F}
+        -     updateFunction::F
+        -     data::T
+        -     dirty::Bool
+        - end
+        0 CacheElement{T, F}(::Type{T}, updateFunction::F) = CacheElement(updateFunction, updateFunction(), true)
+        - CacheElement{T}(value::T) = CacheElement(Identity(value), value, false)
+        - 
+        - function get{T, F}(element::CacheElement{T, F})
+        0     if element.dirty
+        0         element.data = element.updateFunction()
+        0         element.dirty = false
+        -     end
+        0     element.data
+        - end
+        - setdirty!(element::CacheElement) = element.dirty = true
+        - 
+        - type MyFunctor
+        -     a::Vec{3, Float64}
+        -     parentCache::CacheElement{Vec{3, Float64}, MyFunctor}
+        -     MyFunctor(a::Vec{3, Float64}, parentCache::CacheElement{Vec{3, Float64}, MyFunctor}) = new(a, parentCache)
+        0     MyFunctor(a::Vec{3, Float64}) = new(a)
+        - end
+        - 
+        0 call(f::MyFunctor) = isdefined(f, :parentCache) ? tan(cos(sin(exp(log(f.a))))) + get(f.parentCache) : f.a
+        - 
+        - # const cache = [i::Int64 => CacheElement(MyFunctor(Vec(1., 2., 3.)), Vec(2., 3., 4.), true) for i = 1 : N]
+        - # const cache2 = [i::Int64 => CacheElement(() ->Vec(1., 2., 3.), Vec(2., 3., 4.), true) for i = 1 : N]
+        - 
+        - # const cache = [i::Int64 => CacheElement(Vec{3, Float64}, MyFunctor(Vec(1., 2., 3.))) for i = 1 : N]
+        - # const cache2 = [i::Int64 => CacheElement(Vec{3, Float64}, () -> Vec(1., 2., 3.)) for i = 1 : N]
+        - # const cache3 = [i::Int64 => CacheElement(Vec(1., 2., 3.)) for i = 1 : N]
+        - 
+        - const N = 1000000
+        - 
+        - const cache = Dict{Int64, CacheElement{Vec{3, Float64}, MyFunctor}}()
+        - cache[1] = CacheElement(Vec{3, Float64}, MyFunctor(rand(Vec{3, Float64})))
+        - for i = 2 : N
+        -     cache[i] = CacheElement(Vec{3, Float64}, MyFunctor(rand(Vec{3, Float64}), cache[i - 1]))
+        - end
+        - 
+        - for i = 1 : N
+        -     setdirty!(element::CacheElement) = element.dirty = true
+        - end
+        - 
+        - function test()
+        0     bla = zero(Vec{3, Float64})
+        0     a = zero(Vec{3, Float64})
+        0     for i = 1 : N
+        0         element = cache[i]
+        -         # element = cache2[i]
+        0         a = get(element)
+        -     end
+        -     # println(a)
+        - end
+        - 
+        - function main()
+        0     for i = 1 : 2
+        0         Profile.clear()
+        0         Profile.clear_malloc_data()
+        0         @profile test()
+        -     end
+        - end
+        - 
+        - main()
+        - 

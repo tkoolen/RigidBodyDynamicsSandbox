@@ -1,0 +1,25 @@
+julia 0.4
+FixedSizeArrays
+DataStructures
+ODE
+IJulia
+Interact
+PyPlot
+Interpolations
+LightXML
+JuMP
+Gurobi
+PyLCM 0.0.3
+Ipopt
+Memoize
+Compat
+
+ProfileView
+
+git@github.com:rdeits/Quaternions.jl.git d183ac251c7277c287c8a660fd29b21313841c09
+git@github.com:rdeits/RigidBodyTreeInspector.jl.git 98269054447caeb2e5fa49776c5e4c3924e6badf
+#git@github.com:tkoolen/RigidBodyDynamics.jl.git 70ef9b1fd2fa62039b10bd70d5b0701ae35cd773 just symlinked now
+#git@github.com:rdeits/PyLCM.jl.git d90a709cc5b6a12c4de0ed400ceb851ea47394af
+git@github.com:rdeits/DrakeVisualizer.jl.git 7db3693d67f84d935ba5bdc385919e3195bd31c2
+git@github.com:rdeits/MeshIO.jl.git e55676925e57c8420c2a5ce1e74e90229b3be3a8
+
