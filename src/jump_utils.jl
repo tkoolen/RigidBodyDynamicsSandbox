@@ -1,4 +1,4 @@
-function add_vector_nlconstraint(m::JuMP.Model, vec_fun::Function, x::Vector{JuMP.Variable}, comparator::Function, rhs::Vector)
+function add_vector_nlconstraint(m::JuMP.Model, vec_fun::Function, x::Vector{JuMP.VariableRef}, comparator::Function, rhs::Vector)
     # memoize function mapping vector x to vector y
     @memoize Dict function memoized(x)
         vec_fun(x)
@@ -27,8 +27,8 @@ function add_vector_nlconstraint(m::JuMP.Model, vec_fun::Function, x::Vector{JuM
 end
 
 macro VectorNLconstraint(model, constraint)
-    fun_call = constraint.args[1]
-    comparator = constraint.args[2]
+    fun_call = constraint.args[2]
+    comparator = constraint.args[1]
     rhs = constraint.args[3]
     fun = fun_call.args[1]
     arg = fun_call.args[2]
